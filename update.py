@@ -23,17 +23,10 @@ class Sensor(db.Model):
     def __repr__(self):
         return super().__repr__()   
 
+# Change the querying statements
 Sensor.query.all()
-
-filename = "sensor_speed.csv"
-
-with open(filename, 'w') as csvfile:
-    csvwriter = csv.writer(csvfile)
-
-    csvwriter.writerow(fields)
-
-    csvwriter.writerows(rows)
  
+ # Need temp file to store the past history of 2 minutes
 series = read_csv('sensor_speed.csv', header=0, parse_dates=[0], index_col=0, squeeze=True, date_parser=parser)
 X = series.values
 size = int(len(X) * 0.66)
@@ -56,3 +49,15 @@ print('Test MSE: %.3f' % error)
 pyplot.plot(test)
 pyplot.plot(predictions, color='red')
 pyplot.show()
+
+# Write on the csv file later
+filename = "sensor_speed.csv"
+
+with open(filename, 'w') as csvfile:
+    csvwriter = csv.writer(csvfile)
+
+    csvwriter.writerow(fields)
+
+    csvwriter.writerows(rows)
+
+# Update temp file here
