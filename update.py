@@ -1,4 +1,4 @@
-import csv
+import json
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sklearn.metrics import mean_squared_error
