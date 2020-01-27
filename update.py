@@ -16,11 +16,15 @@ query_result = db.execute("SELECT link_id, start_location.lat, start_location.ln
 
 # Need temp file to store the past history of 2 minutes
 print(type(query_result))
-temp = 
-
+with open("sensors_speed.json", "r") as read_file:
+	data = json.load(read_file)
+	past_data = data
 
 # Run ARIMA model
 
+
 # Write on the json file later
+#with open("sensors_speed")
 
 # Update temp file here
+#past_data = data
