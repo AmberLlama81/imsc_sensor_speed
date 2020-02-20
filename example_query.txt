@@ -1,0 +1,14 @@
+psql -U haozeyan -d adms -h gd.usc.edu -p 5436 -c "COPY (select agency, city, date_and_time, link_id, link_type, onstreet, fromstreet, tostreet, direction, postmile, affected_numberof_lanes, st_x(start_lat_long) as longitude, st_y(start_lat_long) as latitude from highway.highway_congestion_config cc
+where cc.date_and_time BETWEEN '2019-07-31 00:00:00' AND '2019-07-31 23:59:59'
+ AND st_distance(cc.start_lat_long::geography, 'SRID=4326;POINT(-118.408433 33.941669)'::geography) <= 16093.4) TO stdout DELIMITER ',' CSV HEADER" \
+    | gzip > lax_highway_sensor_july.csv.gz
+
+
+Instruction:
+
+write your own query and replace the ....... and revise your file name on "YOUR_FILE_NAME": "COPY (......) TO stdout DELIMITER ',' CSV HEADER" \
+    | gzip > YOUR_FILE_NAME.csv.gz"
+
+psql -U adms-api -d adms -h gd.usc.edu -p 5433 -c "COPY (select * from congestion.bus_data where year = 2020 and month = 1) TO stdout DELIMITER ',' CSV HEADER" > busdata.csv
+
+psql -U adms-api -d adms -h gd.usc.edu -p 5433 -c "COPY (select * from congestion.congestion_data where link_status = 'OK' AND date_and_time BETWEEN '2020-01-01 00:00:01' AND '2020-01-31 23:59:59') TO stdout DELIMITER ',' CSV HEADER" | gzip > speedata.csv.gz
