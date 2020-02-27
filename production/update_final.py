@@ -60,41 +60,15 @@ while True:
         for link_id in speed_values:
             speed_values[link_id].reverse()
 
-    count = 0
-    count2 = 0
-    for idx, link_id in enumerate(speed_values):
-        print("Finished ", idx, " out of ", len(speed_values))
-        X = speed_values[link_id]
-        # if idx == 10:
-        #     break
-        for i in range(input_len):
-            try:
-                #Update current value
-                output_sensor_speeds[link_id]['speed'] = X[-1]
-                #print(X)
+    url = 'http://imscgpu.usc.edu:8999/v1/models/dcrnn:predict'
 
-                order = (2, 1, 0)
-                model = ARIMA(X, order)
-                fit = model.fit(disp=0)
-
-                output = fit.forecast()
-                # print("i = ", i)
-                # print("Output = ", output[0].tolist()[0])
-                if (output[0][-1] < 0):
-                    output[0][-1] = 0
-                    output[0][-2] = 0
-                output_sensor_speeds[link_id]['speed_'+str(i)] = float(output[0].tolist()[0])
-                X.append(output[0].tolist()[0])
-                # count2 +=1
-                # print("count2=", count2)
-            except:
-                output = X[-1] + random()
-                output_sensor_speeds[link_id]['speed_'+str(i)] = output
-                count +=1
-                print("count = ", count)
-                X.append(output)
-            
-
+    headers = {
+        'Content-type' : 'application/json',
+        'Charset' : 'UTF-8'
+    }
+        
+    output_sensor_speeds = requests.post(url = url, 
+    json = {'instances':temp_values.tolist()}, headers = headers)
         
     #write back to json file
     #print(output_sensor_speeds)
