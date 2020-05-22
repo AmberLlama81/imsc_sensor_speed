@@ -9,6 +9,7 @@ from pandas import read_csv
 from statsmodels.tsa.arima_model import ARIMA
 from statsmodels.tsa.arima_model import ARIMAResults
 from random import random
+import os
 def __getnewargs__(self):
     return ((self.endog),(self.k_lags, self.k_diff, self.k_ma))
 ARIMA.__getnewargs__ = __getnewargs__
@@ -36,14 +37,17 @@ while True:
     tenMinStr = '{:%Y-%m-%d %H:%M:%S}'.format(tenMinAgo)
     tenMinLatStr = '{:%Y-%m-%d %H:%M:%S}'.format(tenMinLater)
     # Format: 2020-01-25 12:00:00
+    query_command = """psql -U adms-api -d adms -h gd.usc.edu -p 5433 -c "COPY (SELECT link_id, date_and_time, speed from congestion.congestion_data WHERE date_and_time BETWEEN '"""+ tenMinStr + "' AND '"+ currentStr +"""') TO stdout CSV HEADER" > temp.csv"""
+    print(query_command)
     print('++++++++++++++++++++++')
-    subprocess.call(["psql", "-U", "adms-api", "-d", "adms", "-h", "gd.usc.edu", "-p", "5433", "-c", "COPY (SELECT link_id, date_and_time, speed FROM congestion.congestion_data WHERE date_and_time BETWEEN '" + tenMinStr + "' AND '" + currentStr + "') TO stdout DELIMITER \',\' CSV HEADER ", ">", "C:\\Users\\namju\\OneDrive\\Documents\\GitHub\\imsc_sensor_speed\\production\\temp.csv"], shell=True)
+    # subprocess.call(["psql", "-U", "adms-api", "-d", "adms", "-h", "gd.usc.edu", "-p", "5433", "-c", "COPY (SELECT link_id, date_and_time, speed FROM congestion.congestion_data WHERE date_and_time BETWEEN '" + tenMinStr + "' AND '" + currentStr + "') TO stdout DELIMITER \',\' CSV HEADER ", ">", "C:\\Users\\namju\\OneDrive\\Documents\\GitHub\\imsc_sensor_speed\\production\\temp.csv"], shell=True)
+    os.system(query_command)
     print('-----------------------')
     idList = sensors_dict.keys()
 
     speed_values= {}
 
-    with open('production/temp.csv', 'rt') as f:
+    with open('temp.csv', 'rt') as f:
         mycsv = csv.reader(l.replace('\0', '') for l in f)
         count = 0
         for row in mycsv:
@@ -98,6 +102,7 @@ while True:
         
     #write back to json file
     #print(output_sensor_speeds)
-    with open("sensors_speed2.json", "w") as f:
+    with open("sensors_speed.json", "w") as f:
         json.dump(output_sensor_speeds, f)
+    print("Finishing dumping file")
     time.sleep(120.0 - ((time.time() - starttime) % 60.0))
