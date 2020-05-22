@@ -33,7 +33,7 @@ print('-----------------------')
 
 
 with open('temp.csv', 'r') as source:
-        rdr = csv.reader()
+        rdr = csv.reader(source)
         with open('bus51.csv', 'w') as result:
             wtr = csv.writer(result)
             for r in rdr:
