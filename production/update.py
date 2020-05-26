@@ -22,29 +22,29 @@ input_len = 12
 
 currentTime = datetime.datetime.now()
 weekAgo = datetime.datetime.now() - datetime.timedelta(days = 7)
+customTimeStr = '2020-05-01 00:00:01'
 currentStr = '{:%Y-%m-%d %H:%M:%S}'.format(currentTime)
 weekStr = '{:%Y-%m-%d %H:%M:%S}'.format(weekAgo)
 # Format: 2020-01-25 12:00:00
-query_command = """psql -U adms-api -d adms -h gd.usc.edu -p 5433 -c "COPY (SELECT date_and_time, bus_id, line_id, run_id, route_id, route_description, bus_direction, st_x(bus_location), st_y(bus_location), bus_location_time, schedule_deviation, next_stop_time, next_stop_location, next_stop_scheduled_time from transit.bus_data WHERE date_and_time BETWEEN '"""+ weekStr + "' AND '"+ currentStr +"""') TO stdout CSV HEADER" > temp.csv"""
+query_command = """psql -U adms-api -d adms -h gd.usc.edu -p 5433 -c "COPY (SELECT date_and_time, bus_id, line_id, run_id, route_id, route_description, bus_direction, st_y(bus_location), st_x(bus_location), bus_location_time, schedule_deviation, next_stop_time, next_stop_location, next_stop_scheduled_time from transit.bus_data WHERE date_and_time BETWEEN '"""+ customTimeStr + "' AND '"+ currentStr +"""') TO stdout CSV HEADER" > temp.csv"""
 print(query_command)
 print('++++++++++++++++++++++')
 os.system(query_command)
 print('-----------------------')
 
-
 with open('temp.csv', 'r') as source:
-        rdr = csv.reader(source)
-        with open('bus51.csv', 'w') as result:
-            wtr = csv.writer(result)
-            for r in rdr:
-                if r[6] == 'SOUTH':
-                    r[6] = 1
-                elif r[6] == 'EAST':
-                    r[6] = 2
-                elif r[6] == 'WEST':
-                    r[6] = 3
-                elif r[6] == 'NORTH':
-                    r[6] = 4 
-                else:
-                    r[6] = 0
-                wtr.writerow(r)
+    rdr = csv.reader(source)
+    with open('bus51.csv', 'w') as result:
+        wtr = csv.writer(result, lineterminator = '\n')
+        for r in rdr:
+            if r[6] == 'SOUTH':
+                r[6] = 1
+            elif r[6] == 'EAST':
+                r[6] = 2
+            elif r[6] == 'WEST':
+                r[6] = 3
+            elif r[6] == 'NORTH':
+                r[6] = 4 
+            else:
+                r[6] = 0
+            wtr.writerow(r)
